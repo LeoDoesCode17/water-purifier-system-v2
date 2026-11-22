@@ -10,6 +10,9 @@ namespace pages
     {
         constexpr int LCD_COLS = 20;
         constexpr int LCD_ROWS = 4;
+        constexpr int TITLE_ROWS = 1;                        // Row 0 is reserved for the title
+        constexpr int VISIBLE_ITEMS = LCD_ROWS - TITLE_ROWS; // Rows 1-3 show menu items (3 at a time)
+        const char *const TITLE = "MENU";
 
         struct MenuItem
         {
@@ -21,7 +24,7 @@ namespace pages
             {"Sensors", PageId::Sensors},
             {"Control", PageId::Control},
             {"Network", PageId::Network},
-            {"Wifi Config", PageId::WifiConfig}, // new
+            {"Wifi Config", PageId::WifiConfig},
             {"Settings", PageId::Settings},
             {"About", PageId::About},
         };
@@ -49,6 +52,12 @@ namespace pages
     {
         lcd.clear();
         lcd.backlight();
+
+        // Draw the title once. render() never touches row 0, so the title
+        // stays in place no matter how the list scrolls.
+        lcd.setCursor(0, 0);
+        printPadded(lcd, TITLE, LCD_COLS);
+
         // selected_ and top_ are kept, so coming back from an item page
         // leaves the cursor on the item you just opened.
         render(lcd);
@@ -71,14 +80,15 @@ namespace pages
             const int step = static_cast<int>(encoderDelta % ITEM_COUNT);
             selected_ = (selected_ + step + ITEM_COUNT) % ITEM_COUNT;
 
-            // Scroll the visible window so the cursor stays on screen
+            // Scroll the visible window so the cursor stays on screen.
+            // The window is now VISIBLE_ITEMS (3) items tall, not 4.
             if (selected_ < top_)
             {
                 top_ = selected_;
             }
-            else if (selected_ >= top_ + LCD_ROWS)
+            else if (selected_ >= top_ + VISIBLE_ITEMS)
             {
-                top_ = selected_ - (LCD_ROWS - 1);
+                top_ = selected_ - (VISIBLE_ITEMS - 1);
             }
 
             render(lcd);
@@ -87,10 +97,11 @@ namespace pages
 
     void MenuPage::render(LiquidCrystal_I2C &lcd)
     {
-        for (int row = 0; row < LCD_ROWS; row++)
+        // Only draws the item area (LCD rows 1-3); row 0 (title) is left alone.
+        for (int row = 0; row < VISIBLE_ITEMS; row++)
         {
-            const int index = top_ + row;
-            lcd.setCursor(0, row);
+            const int index = top_ + row;       // Which menu item belongs on this row
+            lcd.setCursor(0, row + TITLE_ROWS); // Shift down by one row to skip the title
 
             if (index < ITEM_COUNT)
             {
