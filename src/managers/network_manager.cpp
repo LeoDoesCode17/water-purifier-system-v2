@@ -6,6 +6,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 #include "nvs_manager.h"
+#include "networks/uart1.h"
 
 namespace
 {
@@ -403,6 +404,7 @@ namespace network_manager
         bool ok = true;
 
         // initialize uart
+        uart1::initialize();
 
         if (!ok)
         {
@@ -489,6 +491,12 @@ namespace network_manager
     void update_on_core_1()
     {
         // update UART
+        uart1::update();
+    }
+
+    const uart_sensor_t get_sensor_data()
+    {
+        return uart1::get_sensor_data();
     }
 
     bool isWifiConnected() { return wifiUp; }

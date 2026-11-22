@@ -1,7 +1,6 @@
 #pragma once
 #include <Arduino.h>
 #include <IPAddress.h>
-// #include "networks/lora.h"
 #include "core/type.h"
 
 namespace network_manager
@@ -16,9 +15,8 @@ namespace network_manager
     void update_on_core_0(); // Non-blocking-ish: drives Wi-Fi + MQTT connect/reconnect
     void update_on_core_1(); // Drives LoRa receive. Call ONLY from the core-1 task.
 
-    // ---- LoRa passthrough -------------------------------------------------------
-    // const lora::TelemetryPacket &getLatestTelemetry();
-    // bool isLoraSignalLost(unsigned long timeoutMs = 5000);
+    // UART1 sensor data
+    const uart_sensor_t get_sensor_data();
 
     // ---- Connectivity status (safe to call from any task / core) -----------------
     bool isWifiConnected(); // Wi-Fi station is connected to the configured network
