@@ -8,5 +8,5 @@ namespace uart1
 {
     void initialize();
     void update();
-    const uart_sensor_t& get_uart_sensor_data();
+    const uart_sensor_t& get_sensor_data();
 }
