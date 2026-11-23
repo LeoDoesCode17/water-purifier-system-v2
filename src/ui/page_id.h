@@ -8,10 +8,15 @@ namespace pages
         Menu,
         Sensors,
         Control,
-        Network,
+        Networks,
         Settings,
         About,
         WifiConfig,
         ConfigMode,
+        TestSensors,
+        TestActuators,
+        Start,
+        NetworkConfig,
+        NetworkStatus,
     };
 }
