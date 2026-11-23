@@ -21,10 +21,7 @@ namespace pages
         };
 
         const MenuItem ITEMS[] = {
-            {"Sensors", PageId::Sensors},
-            {"Control", PageId::Control},
-            {"Network", PageId::Network},
-            {"Wifi Config", PageId::WifiConfig},
+            {"Start", PageId::Start},
             {"Settings", PageId::Settings},
             {"About", PageId::About},
         };
