@@ -3,9 +3,15 @@
 #include "sensor_manager.h"
 #include "ui/landing_page.h"
 #include "ui/menu_page.h"
-#include "ui/sub_page.h"
-#include "ui/wifi_configuration_page.h"
+#include "ui/network_configuration_page.h"
 #include "ui/config_mode_page.h"
+#include "ui/settings_page.h"
+#include "ui/about_page.h"
+#include "ui/networks_page.h"
+#include "ui/test_sensors_page.h"
+#include "ui/test_actuators_page.h"
+#include "ui/start_page.h"
+#include "ui/network_status_page.h"
 
 namespace
 {
@@ -21,20 +27,24 @@ namespace
             return &pages::landing_page;
         case pages::PageId::Menu:
             return &pages::menu_page;
-        case pages::PageId::Sensors:
-            return &pages::sensors_page;
-        case pages::PageId::Control:
-            return &pages::control_page;
-        case pages::PageId::Network:
-            return &pages::network_page;
         case pages::PageId::Settings:
             return &pages::settings_page;
         case pages::PageId::About:
             return &pages::about_page;
-        case pages::PageId::WifiConfig:
-            return &pages::wifi_configuration_page;
+        case pages::PageId::NetworkConfig:
+            return &pages::network_configuration_page;
         case pages::PageId::ConfigMode:
             return &pages::config_mode_page;
+        case pages::PageId::Networks:
+            return &pages::networks_page;
+        case pages::PageId::TestSensors:
+            return &pages::test_sensors_page;
+        case pages::PageId::TestActuators:
+            return &pages::test_actuators_page;
+        case pages::PageId::Start:
+            return &pages::start_page;
+        case pages::PageId::NetworkStatus:
+            return &pages::network_status_page;
         }
         return &pages::landing_page;
     }
