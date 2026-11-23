@@ -1,4 +1,4 @@
-#include "wifi_configuration_page.h"
+#include "network_configuration_page.h"
 #include "lcd_utils.h"
 #include "page_id.h"
 #include "managers/page_manager.h"
@@ -6,7 +6,7 @@
 
 namespace pages
 {
-    WifiConfigurationPage wifi_configuration_page; // Create the global instance
+    NetworkConfigurationPage network_configuration_page; // Create the global instance
 
     namespace
     {
@@ -18,7 +18,7 @@ namespace pages
         constexpr int VALUE_WIDTH = SCROLL_COL - CURSOR_WIDTH - VALUE_INDENT;
     }
 
-    void WifiConfigurationPage::onEnter(LiquidCrystal_I2C &lcd)
+    void NetworkConfigurationPage ::onEnter(LiquidCrystal_I2C &lcd)
     {
         apError_ = false; // Forget any error from a previous visit
         selected_ = 0;    // Start at the top so the saved values are visible first
@@ -30,9 +30,9 @@ namespace pages
         render(lcd);     // Draw the first 4 lines
     }
 
-    void WifiConfigurationPage::onExit() {} // Nothing to clean up
+    void NetworkConfigurationPage ::onExit() {} // Nothing to clean up
 
-    void WifiConfigurationPage::update(LiquidCrystal_I2C &lcd, long encoderDelta, bool buttonPressed)
+    void NetworkConfigurationPage ::update(LiquidCrystal_I2C &lcd, long encoderDelta, bool buttonPressed)
     {
         if (buttonPressed) // Encoder button was clicked
         {
@@ -54,7 +54,7 @@ namespace pages
                 break;
 
             case Action::Back:
-                page_manager::navigate_to(PageId::Menu); // Return to the menu
+                page_manager::navigate_to(PageId::Networks); // Return to the menu
                 break;
 
             case Action::None: // Cursor is on an info line (SSID, host...): nothing to do
@@ -79,7 +79,7 @@ namespace pages
         }
     }
 
-    void WifiConfigurationPage::buildLines()
+    void NetworkConfigurationPage ::buildLines()
     {
         lines_.clear(); // Start from an empty list
 
@@ -100,12 +100,12 @@ namespace pages
         addLine("Back", Action::Back);           // Button 2
     }
 
-    void WifiConfigurationPage::addLine(const String &text, Action action)
+    void NetworkConfigurationPage ::addLine(const String &text, Action action)
     {
         lines_.push_back(Line{text, action}); // Append one line to the content
     }
 
-    void WifiConfigurationPage::addValue(const String &value)
+    void NetworkConfigurationPage ::addValue(const String &value)
     {
         if (value.length() == 0) // Nothing received yet
         {
@@ -120,7 +120,7 @@ namespace pages
         }
     }
 
-    void WifiConfigurationPage::scrollIntoView()
+    void NetworkConfigurationPage ::scrollIntoView()
     {
         if (selected_ < top_) // Cursor moved above the window: scroll up
         {
@@ -132,7 +132,7 @@ namespace pages
         }
     }
 
-    void WifiConfigurationPage::render(LiquidCrystal_I2C &lcd)
+    void NetworkConfigurationPage ::render(LiquidCrystal_I2C &lcd)
     {
         const int count = static_cast<int>(lines_.size());
 

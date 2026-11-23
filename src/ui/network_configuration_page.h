@@ -5,7 +5,7 @@
 
 namespace pages
 {
-    class WifiConfigurationPage : public IPage
+    class NetworkConfigurationPage : public IPage
     {
     public:
         void onEnter(LiquidCrystal_I2C &lcd) override;
@@ -40,5 +40,5 @@ namespace pages
         bool apError_ = false;    // true after "Configure" failed to start the access point
     };
 
-    extern WifiConfigurationPage wifi_configuration_page; // The single instance used by PageManager
+    extern NetworkConfigurationPage network_configuration_page; // The single instance used by PageManager
 }
