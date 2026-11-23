@@ -41,7 +41,7 @@ namespace uart1
         }
     }
 
-    const uart_sensor_t& get_uart_sensor_data()
+    const uart_sensor_t& get_sensor_data()
     {
         return sensor_data;
     }
