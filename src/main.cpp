@@ -22,7 +22,7 @@ void mainTask(void *pv)
   Serial.printf("[RTOS] Core-%d - main task started\n", xPortGetCoreID());
   for (;;)
   {
-    network_manager::update_on_core_1();
+    // network_manager::update_on_core_1();
     network_manager::update_ap(); // config web server (only does work in AP mode)
     page_manager::update();
     vTaskDelay(pdMS_TO_TICKS(1)); // yield so the idle task / watchdog can run
