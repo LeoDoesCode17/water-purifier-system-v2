@@ -40,7 +40,7 @@ namespace pages
 
         if (buttonPressed) // Cancel (or Back after saving)
         {
-            page_manager::navigate_to(PageId::Menu); // onExit() above will stop the AP
+            page_manager::navigate_to(PageId::Networks); // onExit() above will stop the AP
         }
     }
 }
