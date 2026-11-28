@@ -6,4 +6,5 @@ namespace actuator_manager
     void initialize();
     void turn_on(Actuator actuator);
     void turn_off(Actuator actuator);
+    bool is_actuator_on(Actuator actuator);
 }

@@ -7,6 +7,10 @@ namespace
     static Servo servo;
     const uint8_t CLOSED_SERVO_DEGREE = 0;
     const uint8_t OPENED_SERVO_DEGREE = 90;
+    static bool _is_valve_open = false;
+    static bool _is_pump1_on = false;
+    static bool _is_pump2_on = false;
+    static bool _is_motor_gear_on = false;
 } // namespace
 
 namespace actuator_manager
@@ -36,15 +40,19 @@ namespace actuator_manager
         {
         case Actuator::MOTOR_GEAR:
             digitalWrite(pin::MOTOR_GEAR, LOW);
+            _is_motor_gear_on = true;
             break;
         case Actuator::PUMP_1:
             digitalWrite(pin::PUMP_1, HIGH);
+            _is_pump1_on = true;
             break;
         case Actuator::PUMP_2:
             digitalWrite(pin::PUMP_2, HIGH);
+            _is_pump2_on = true;
             break;
         case Actuator::VALVE:
             servo.write(OPENED_SERVO_DEGREE);
+            _is_valve_open = true;
             break;
         }
     }
@@ -54,16 +62,37 @@ namespace actuator_manager
         {
         case Actuator::MOTOR_GEAR:
             digitalWrite(pin::MOTOR_GEAR, HIGH);
+            _is_motor_gear_on = false;
             break;
         case Actuator::PUMP_1:
             digitalWrite(pin::PUMP_1, LOW);
+            _is_pump1_on = false;
             break;
         case Actuator::PUMP_2:
             digitalWrite(pin::PUMP_2, LOW);
+            _is_pump2_on = false;
             break;
         case Actuator::VALVE:
             servo.write(CLOSED_SERVO_DEGREE);
+            _is_valve_open = false;
             break;
+        }
+    }
+
+    bool is_actuator_on(Actuator actuator)
+    {
+        switch (actuator)
+        {
+        case Actuator::MOTOR_GEAR:
+            return _is_motor_gear_on;
+        case Actuator::PUMP_1:
+            return _is_pump1_on;
+        case Actuator::PUMP_2:
+            return _is_pump2_on;
+        case Actuator::VALVE:
+            return _is_valve_open;
+        default:
+            return false;
         }
     }
 }
