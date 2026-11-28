@@ -4,6 +4,29 @@ namespace
 {
     static uart_sensor_t sensor_data;
     static constexpr int BAUD_RATE = 9600;
+    static constexpr size_t RX_BUF_SIZE = 256;
+    static char rx_buf[RX_BUF_SIZE];
+    static size_t rx_idx = 0;
+
+    void parse_line(const char *line)
+    {
+        if (line[0] == '\0')
+            return;
+
+        JsonDocument doc;
+        DeserializationError err = deserializeJson(doc, line);
+        if (err)
+        {
+            Serial.printf("JSON error: %s | raw: %s\n", err.c_str(), line);
+            return;
+        }
+
+        sensor_data.ph_voltage = doc["ph_voltage"] | -99.0f;
+        sensor_data.tds_voltage = doc["tds_voltage"] | -99.0f;
+        sensor_data.turbidity_voltage = doc["turbidity_voltage"] | -99.0f;
+        sensor_data.distance_cm = doc["distance_cm"] | -99.0f;
+        sensor_data.temperature_celcius = doc["temperature_celcius"] | -99.0f;
+    }
 }
 
 namespace uart1
@@ -15,35 +38,32 @@ namespace uart1
 
     void update()
     {
-        if (Serial1.available())
+        while (Serial1.available() > 0)
         {
-            String line = Serial1.readStringUntil('\n');
-            line.trim();
-            if (line.isEmpty())
+            char c = static_cast<char>(Serial1.read());
+            if (c == '\r')
+                continue;
+
+            if (c == '\n')
             {
-                return;
+                rx_buf[rx_idx] = '\0';
+                parse_line(rx_buf);
+                rx_idx = 0;
             }
-
-            JsonDocument doc;
-            DeserializationError err = deserializeJson(doc, line);
-
-            if (err)
+            else if (rx_idx < RX_BUF_SIZE - 1)
             {
-                Serial.printf("JSON error: %s | raw: %s\n", err.c_str(), line.c_str());
-                return;
+                rx_buf[rx_idx++] = c;
             }
-
-            sensor_data.ph_voltage = doc["ph_voltage"] | -99.0f;
-            sensor_data.tds_voltage = doc["tds_voltage"] | -99.0f;
-            sensor_data.turbidity_voltage = doc["turbidity_voltage"] | -99.0f;
-            sensor_data.distance_cm = doc["distance_cm"];
-            sensor_data.temperature_celcius = doc["temperature_celcius"] | -99.0f;
+            else
+            {
+                // Line overflow: reset buffer to recover cleanly
+                rx_idx = 0;
+            }
         }
     }
 
-    const uart_sensor_t& get_sensor_data()
+    const uart_sensor_t &get_sensor_data()
     {
         return sensor_data;
     }
-
 }
