@@ -39,7 +39,7 @@ namespace actuator_manager
         switch (actuator)
         {
         case Actuator::MOTOR_GEAR:
-            digitalWrite(pin::MOTOR_GEAR, LOW);
+            digitalWrite(pin::MOTOR_GEAR, HIGH);
             _is_motor_gear_on = true;
             break;
         case Actuator::PUMP_1:
@@ -61,7 +61,7 @@ namespace actuator_manager
         switch (actuator)
         {
         case Actuator::MOTOR_GEAR:
-            digitalWrite(pin::MOTOR_GEAR, HIGH);
+            digitalWrite(pin::MOTOR_GEAR, LOW);
             _is_motor_gear_on = false;
             break;
         case Actuator::PUMP_1:
