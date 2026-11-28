@@ -5,11 +5,14 @@
 #include "managers/sensor_manager.h"
 #include "managers/network_manager.h"
 #include "managers/page_manager.h"
+#include "managers/queue_manager.h"
+#include "core/type.h"
 
 namespace
 {
   // ---- Task settings ----
   static constexpr uint32_t TASK_STACK_BYTES = 8192; // Wi-Fi/MQTT/printf need more than 4096
+  static constexpr uint32_t LIGHT_TASK_STACK_BYTES = 2048;
   static constexpr UBaseType_t TASK_PRIORITY = 1;
   static constexpr uint8_t SDA_PIN = 8;
   static constexpr uint8_t SCL_PIN = 9;
@@ -36,8 +39,34 @@ void networkTask(void *pv)
   network_manager::initialize_on_core_0();
   for (;;)
   {
-    network_manager::update_on_core_0(); // was update_on_core_1(): LoRa was being driven from BOTH cores
+    network_manager::update_on_core_0(); 
     vTaskDelay(pdMS_TO_TICKS(20));
+  }
+}
+
+void uartSensorProduceTask(void *pv)
+{
+  Serial.printf("[RTOS] Core-%d - uart sensor produce task started\n", xPortGetCoreID());
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  const TickType_t xPeriod = pdMS_TO_TICKS(100);
+  for (;;)
+  {
+    const uart_sensor_t data = network_manager::get_uart_sensor_data();
+    queue_manager::enqueue_sensor_data(data);
+    vTaskDelayUntil(&xLastWakeTime, xPeriod);
+  }
+}
+
+void uartSensorConsumeTask(void *pv)
+{
+  Serial.printf("[RTOS] Core-%d - uart sensor consume task started\n", xPortGetCoreID());
+  uart_sensor_t sensor_data{};
+  for (;;)
+  {
+    if (queue_manager::dequeue_sensor_data(sensor_data, portMAX_DELAY))
+    {
+      sensor_manager::set_uart_sensor_data(sensor_data);
+    }
   }
 }
 
@@ -50,13 +79,17 @@ void setup()
   // Initialize the LCD module
   lcd.init();
 
+  queue_manager::initialize();
+
   actuator_manager::initialize();
   sensor_manager::initialize();
   page_manager::initialize(lcd);
   network_manager::initialize_on_core_1();
 
   xTaskCreatePinnedToCore(networkTask, "NetworkTask", TASK_STACK_BYTES, NULL, TASK_PRIORITY, NULL, 0);
+  xTaskCreatePinnedToCore(uartSensorProduceTask, "UartSensorProduceTask", LIGHT_TASK_STACK_BYTES, NULL, TASK_PRIORITY, NULL, 0);
   xTaskCreatePinnedToCore(mainTask, "MainTask", TASK_STACK_BYTES, NULL, TASK_PRIORITY, NULL, 1);
+  xTaskCreatePinnedToCore(uartSensorConsumeTask, "UartSensorConsumeTask", LIGHT_TASK_STACK_BYTES, NULL, TASK_PRIORITY, NULL, 1);
 }
 
 void loop()
