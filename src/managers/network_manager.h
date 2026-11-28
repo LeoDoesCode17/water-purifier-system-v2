@@ -16,7 +16,7 @@ namespace network_manager
     void update_on_core_1(); // Drives LoRa receive. Call ONLY from the core-1 task.
 
     // UART1 sensor data
-    const uart_sensor_t get_sensor_data();
+    const uart_sensor_t get_uart_sensor_data();
 
     // ---- Connectivity status (safe to call from any task / core) -----------------
     bool isWifiConnected(); // Wi-Fi station is connected to the configured network

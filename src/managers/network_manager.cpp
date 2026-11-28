@@ -403,9 +403,6 @@ namespace network_manager
 
         bool ok = true;
 
-        // initialize uart
-        uart1::initialize();
-
         if (!ok)
         {
             Serial.println("[NETWORK-MANAGER] Initialize network on core 1 failed");
@@ -417,6 +414,9 @@ namespace network_manager
     bool initialize_on_core_0()
     {
         createMutexes();
+
+        // initialize uart
+        uart1::initialize();
 
         WiFi.persistent(false);       // don't rewrite Wi-Fi settings to flash on every begin()
         WiFi.setAutoReconnect(false); // reconnects are driven by update_on_core_0()
@@ -486,15 +486,14 @@ namespace network_manager
         wifiStep(now);
         if (wifiState == WifiState::Connected)
             mqttStep(now);
-    }
 
-    void update_on_core_1()
-    {
-        // update UART
+        // update uart
         uart1::update();
     }
 
-    const uart_sensor_t get_sensor_data()
+    void update_on_core_1() {}
+
+    const uart_sensor_t get_uart_sensor_data()
     {
         return uart1::get_sensor_data();
     }
